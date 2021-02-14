@@ -2,10 +2,13 @@ import Phaser from 'phaser'
 
 import HelloWorldScene from './scenes/HelloWorldScene'
 
+export const WIDTH = 1600
+export const HEIGHT = 900
+
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: WIDTH,
+  height: HEIGHT,
   physics: {
     default: 'arcade',
     arcade: {
@@ -16,7 +19,8 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [HelloWorldScene]
+  scene: [HelloWorldScene],
+  backgroundColor: '#999999'
 }
 
 export default new Phaser.Game(config)

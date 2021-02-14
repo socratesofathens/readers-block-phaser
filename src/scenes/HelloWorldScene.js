@@ -1,36 +1,85 @@
 import Phaser from 'phaser'
 
+import { HEIGHT, WIDTH } from '../main.js'
+import Square from '../Square'
+
 export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
     super('hello-world')
+
+    this.state = [
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', '']
+    ]
+
+    this.letters = []
   }
 
   preload = () => {
-    this.load.setBaseURL('http://labs.phaser.io')
+  }
 
-    this.load.image('sky', 'assets/skies/space3.png')
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png')
-    this.load.image('red', 'assets/particles/red.png')
+  addLetter = (x, y, letter) => {
+    const square = new Square(this, x, y, letter)
+
+    this.letters.push(square)
   }
 
   create = () => {
-    console.log('creating...')
-    this.add.image(400, 300, 'sky')
+    this.addLetter(0, 0, 'A')
+    this.addLetter(9, 5, 'B')
 
-    const particles = this.add.particles('red')
-
-    const emitter = particles.createEmitter({
-      speed: 100,
-      scale: { start: 1, end: 0 },
-      blendMode: 'ADD'
+    this.timedEvent = this.time.addEvent({
+      delay: 500,
+      callback: this.tick,
+      callbackScope: this,
+      loop: true
     })
-
-    const logo = this.physics.add.image(400, 100, 'logo')
-
-    logo.setVelocity(100, 200)
-    logo.setBounce(1, 1)
-    logo.setCollideWorldBounds(true)
-
-    emitter.startFollow(logo)
   }
+
+  down = (row, square, rowIndex, columnIndex) => {
+    const nextRowIndex = rowIndex + 1
+    const nextRow = this.state[nextRowIndex]
+    if (!nextRow) return nextRow
+
+    const next = nextRow[columnIndex]
+
+    if (next === '') {
+      square.y = nextRowIndex
+    }
+  }
+
+  each = (callback) => {
+    this.state.forEach((row, rowIndex) => {
+      row.forEach((square, columnIndex) => {
+        if (square) {
+          callback(row, square, rowIndex, columnIndex)
+        }
+      })
+    })
+  }
+
+  high = percent => HEIGHT * percent
+
+  move = (row, square, rowIndex, columnIndex) => {
+    square.move()
+  }
+
+  tick = () => {
+    this.each(this.down)
+
+    this.each(this.move)
+  }
+
+  update () {
+  }
+
+  wide = percent => HEIGHT * percent * WIDTH / HEIGHT
 }
