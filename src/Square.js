@@ -5,13 +5,14 @@ export default class Square {
     this.y = y
     this.letter = letter
 
-    this.size = 0.1
+    this.size = 1 / this.scene.state.length
+    this.halfSize = this.size / 2
 
     this.wideX = this.set(this.x)
 
     this.highY = this.set(this.y)
 
-    this.height = this.scene.high(0.1)
+    this.height = this.scene.high(this.size)
 
     this.box = this
       .scene
@@ -24,7 +25,8 @@ export default class Square {
         0x000000
       )
 
-    this.fontSize = this.scene.high(0.075)
+    const fontSize = this.size * 0.75
+    this.fontSize = this.scene.high(fontSize)
 
     this.text = this
       .scene
@@ -39,7 +41,7 @@ export default class Square {
 
   set (index) {
     const edge = this.size * index
-    const center = 0.05 + edge
+    const center = this.halfSize + edge
     const high = this.scene.high(center)
 
     return high

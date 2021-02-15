@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 
 import { HEIGHT, WIDTH } from '../main.js'
-import Square from '../Square'
+import Block from '../Block'
 
 export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
@@ -17,24 +17,43 @@ export default class HelloWorldScene extends Phaser.Scene {
       ['', '', '', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', ''],
       ['', '', '', '', '', '', '', '', '', '']
     ]
 
+    this.blocks = []
     this.letters = []
   }
 
   preload = () => {
   }
 
-  addLetter = (x, y, letter) => {
-    const square = new Square(this, x, y, letter)
+  addBlock = (x, y) => {
+    const block = new Block(this, x, y, ['A', 'B', 'C', 'D'], 'L')
 
-    this.letters.push(square)
+    this.blocks.push(block)
   }
 
   create = () => {
-    this.addLetter(0, 0, 'A')
-    this.addLetter(9, 5, 'B')
+    const RATIO = HEIGHT / WIDTH
+    const SLIM = HEIGHT * RATIO
+    const HALF_SLIM = SLIM / 2
+
+    const HALF_HEIGHT = HEIGHT / 2
+    this.background = this.add.rectangle(
+      HALF_SLIM, HALF_HEIGHT, SLIM, HEIGHT, 0xffffff
+    )
+
+    this.addBlock(0, 0)
 
     this.timedEvent = this.time.addEvent({
       delay: 500,
@@ -45,15 +64,7 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   down = (row, square, rowIndex, columnIndex) => {
-    const nextRowIndex = rowIndex + 1
-    const nextRow = this.state[nextRowIndex]
-    if (!nextRow) return nextRow
-
-    const next = nextRow[columnIndex]
-
-    if (next === '') {
-      square.y = nextRowIndex
-    }
+    this.blocks.map(block => block.down())
   }
 
   each = (callback) => {
@@ -68,14 +79,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   high = percent => HEIGHT * percent
 
-  move = (row, square, rowIndex, columnIndex) => {
-    square.move()
-  }
-
   tick = () => {
-    this.each(this.down)
-
-    this.each(this.move)
+    this.down()
   }
 
   update () {
