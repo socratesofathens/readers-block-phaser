@@ -74,4 +74,14 @@ export default class Square {
     this.y = this.y + 1
     this.set()
   }
+
+  left () {
+    this.x = this.x - 1
+    this.set()
+  }
+
+  right () {
+    this.x = this.x + 1
+    this.set()
+  }
 }

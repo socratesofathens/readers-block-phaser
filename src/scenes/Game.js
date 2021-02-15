@@ -7,28 +7,14 @@ export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
     super('hello-world')
 
-    this.state = [
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', ''],
-      ['', '', '', '', '', '', '', '', '', '']
-    ]
+    this.rowCount = 20
+    this.columnCount = 12
+
+    this.state = this.array(
+      this.rowCount,
+      this.array(this.columnCount, '')
+    )
+    console.log('state test:', this.state)
 
     this.blocks = []
     this.letters = []
@@ -45,21 +31,25 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.blocks.push(block)
   }
 
-  create = () => {
-    const RATIO = HEIGHT / WIDTH
-    const SLIM = HEIGHT * RATIO
-    const HALF_SLIM = SLIM / 2
+  array = (length, value) => Array
+    .from({ length }, () => value)
 
+  create = () => {
+    const rowHeight = HEIGHT / this.rowCount
+    const width = this.columnCount * rowHeight
+
+    const halfWidth = width / 2
     const HALF_HEIGHT = HEIGHT / 2
+
     this.background = this.add.rectangle(
-      HALF_SLIM,
+      halfWidth,
       HALF_HEIGHT,
-      SLIM,
+      width,
       HEIGHT,
       0xffffff
     )
 
-    this.addBlock(0, 0)
+    this.addBlock(4, 0)
 
     this.timedEvent = this.time.addEvent({
       delay: 500,
@@ -84,7 +74,7 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   tick = () => {
-    this.blocks.map(block => block.down())
+    this.blocks.map(block => block.right())
   }
 
   update () {

@@ -26,11 +26,26 @@ export default class Block {
     })
   }
 
-  getBelow = (above) => {
-    console.log('above test:', above)
-    const below = above.y + 1
+  down () {
+    const blocked = this
+      .squares
+      .find(square => this.getBelow(square))
 
-    console.log('below test:', below)
+    if (blocked) return blocked
+
+    this.squares.forEach(square => square.down())
+  }
+
+  isOutside (square) {
+    const inside = this
+      .squares
+      .find(inside => inside === square)
+
+    return !inside
+  }
+
+  getBelow = (above) => {
+    const below = above.y + 1
 
     const row = this.scene.state[below]
     if (!row) return true
@@ -38,38 +53,34 @@ export default class Block {
     const square = row[above.x]
     if (!square) return square
 
-    console.log('square test:', square)
+    const outside = this.isOutside(square)
 
-    const inside = this.squares.find(inside => {
-      return inside === square
-    })
-
-    console.log('inside test:', inside)
-
-    const opposite = !inside
-
-    console.log('opposite test:', opposite)
-
-    return opposite
+    return outside
   }
 
-  down () {
-    const blocked = this.squares.find(square => {
-      const below = this.getBelow(square)
-      console.log('above below test:', below)
+  getRight = (port) => {
+    const row = this.scene.state[port.y]
+    if (!row) return true
 
-      const bool = !!below
-      console.log('bool test:', bool)
+    const starboard = port.x + 1
+    const square = row[starboard]
+    if (square === '') return square
+    if (!square) return true
 
-      return bool
-    })
+    const outside = this.isOutside(square)
+
+    return outside
+  }
+
+  right () {
+    const blocked = this
+      .squares
+      .find(square => this.getRight(square))
 
     console.log('blocked test:', blocked)
 
     if (blocked) return blocked
 
-    this.squares.map(square => square.down())
-
-    console.log('down test!')
+    this.squares.forEach(square => square.right())
   }
 }
