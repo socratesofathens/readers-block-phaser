@@ -1,6 +1,6 @@
 import Phaser from 'phaser'
 
-import HelloWorldScene from './scenes/HelloWorldScene'
+import Game from './scenes/Game'
 
 export const WIDTH = 1600
 export const HEIGHT = 900
@@ -19,7 +19,7 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [HelloWorldScene],
+  scene: [Game],
   backgroundColor: '#999999'
 }
 

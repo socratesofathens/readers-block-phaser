@@ -38,7 +38,9 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   addBlock = (x, y) => {
-    const block = new Block(this, x, y, ['A', 'B', 'C', 'D'], 'L')
+    const block = new Block(
+      this, x, y, ['A', 'B', 'C', 'D'], 'L'
+    )
 
     this.blocks.push(block)
   }
@@ -50,7 +52,11 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     const HALF_HEIGHT = HEIGHT / 2
     this.background = this.add.rectangle(
-      HALF_SLIM, HALF_HEIGHT, SLIM, HEIGHT, 0xffffff
+      HALF_SLIM,
+      HALF_HEIGHT,
+      SLIM,
+      HEIGHT,
+      0xffffff
     )
 
     this.addBlock(0, 0)
@@ -63,15 +69,13 @@ export default class HelloWorldScene extends Phaser.Scene {
     })
   }
 
-  down = (row, square, rowIndex, columnIndex) => {
-    this.blocks.map(block => block.down())
-  }
-
   each = (callback) => {
     this.state.forEach((row, rowIndex) => {
       row.forEach((square, columnIndex) => {
         if (square) {
-          callback(row, square, rowIndex, columnIndex)
+          callback(
+            row, square, rowIndex, columnIndex
+          )
         }
       })
     })
@@ -80,11 +84,18 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   tick = () => {
-    this.down()
+    this.blocks.map(block => block.down())
   }
 
   update () {
+    this.letters.map(letter => letter.move())
   }
 
-  wide = percent => HEIGHT * percent * WIDTH / HEIGHT
+  wide = percent => {
+    const ratio = WIDTH / HEIGHT
+
+    const height = HEIGHT * percent
+
+    return height * ratio
+  }
 }

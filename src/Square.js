@@ -5,12 +5,14 @@ export default class Square {
     this.y = y
     this.letter = letter
 
+    this.scene.letters.push(this)
+
     this.size = 1 / this.scene.state.length
     this.halfSize = this.size / 2
 
-    this.wideX = this.set(this.x)
+    this.realX = this.align(this.x)
 
-    this.highY = this.set(this.y)
+    this.realY = this.align(this.y)
 
     this.height = this.scene.high(this.size)
 
@@ -18,8 +20,8 @@ export default class Square {
       .scene
       .add
       .rectangle(
-        this.wideX,
-        this.highY,
+        this.realX,
+        this.realY,
         this.height,
         this.height,
         0x000000
@@ -31,15 +33,15 @@ export default class Square {
     this.text = this
       .scene
       .add
-      .text(this.wideX, this.highY, this.letter, {
+      .text(this.realX, this.realY, this.letter, {
         fontSize: this.fontSize
       })
     this.text.setOrigin(0.5)
 
-    this.move()
+    this.set()
   }
 
-  set (index) {
+  align (index) {
     const edge = this.size * index
     const center = this.halfSize + edge
     const high = this.scene.high(center)
@@ -47,21 +49,29 @@ export default class Square {
     return high
   }
 
+  moveComponent (component) {
+    component.x = this.realX
+    component.y = this.realY
+    this.box.y = this.realY
+
+    this.text.x = this.realX
+    this.text.y = this.realY
+  }
+
   move () {
-    this.wideX = this.set(this.x)
-    this.highY = this.set(this.y)
+    this.realX = this.align(this.x)
+    this.realY = this.align(this.y)
 
-    this.box.x = this.wideX
-    this.box.y = this.highY
+    this.moveComponent(this.box)
+    this.moveComponent(this.text)
+  }
 
-    this.text.x = this.wideX
-    this.text.y = this.highY
-
+  set () {
     this.scene.state[this.y][this.x] = this
   }
 
   down () {
     this.y = this.y + 1
-    this.move()
+    this.set()
   }
 }
