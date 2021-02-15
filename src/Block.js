@@ -9,31 +9,31 @@ export default class Block {
     this.shape = shape
 
     this.positions = [
+      { x: this.x - 1, y: this.y },
       { x: this.x, y: this.y },
       { x: this.x + 1, y: this.y },
-      { x: this.x + 2, y: this.y },
-      { x: this.x + 2, y: this.y + 1 }
+      { x: this.x + 1, y: this.y + 1 }
     ]
 
-    this.squares = letters.map((letter, index) => {
-      const position = this.positions[index]
+    this.squares = letters
+      .map((letter, index) => {
+        const position = this.positions[index]
 
-      const square = new Square(
-        this.scene, position.x, position.y, letter
-      )
+        const square = new Square(
+          this.scene,
+          position.x,
+          position.y,
+          letter
+        )
 
-      return square
-    })
+        return square
+      })
   }
 
   down () {
-    const blocked = this
-      .squares
-      .find(square => this.getBelow(square))
-
-    if (blocked) return blocked
-
-    this.squares.forEach(square => square.down())
+    this.move(
+      this.getBelow, square => square.down
+    )
   }
 
   isOutside (square) {
@@ -58,12 +58,12 @@ export default class Block {
     return outside
   }
 
-  getRight = (port) => {
-    const row = this.scene.state[port.y]
+  getLeft = (near) => {
+    const row = this.scene.state[near.y]
     if (!row) return true
 
-    const starboard = port.x + 1
-    const square = row[starboard]
+    const far = near.x - 1
+    const square = row[far]
     if (square === '') return square
     if (!square) return true
 
@@ -72,15 +72,36 @@ export default class Block {
     return outside
   }
 
-  right () {
-    const blocked = this
-      .squares
-      .find(square => this.getRight(square))
+  getRight = (near) => {
+    const row = this.scene.state[near.y]
+    if (!row) return true
 
-    console.log('blocked test:', blocked)
+    const far = near.x + 1
+    const square = row[far]
+    if (square === '') return square
+    if (!square) return true
 
+    const outside = this.isOutside(square)
+
+    return outside
+  }
+
+  move (checker, mover) {
+    const blocked = this.squares.find(checker)
     if (blocked) return blocked
 
-    this.squares.forEach(square => square.right())
+    this.squares.forEach(mover)
+  }
+
+  left () {
+    this.move(
+      this.getLeft, square => square.left()
+    )
+  }
+
+  right () {
+    this.move(
+      this.getRight, square => square.right()
+    )
   }
 }

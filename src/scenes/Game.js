@@ -14,7 +14,6 @@ export default class HelloWorldScene extends Phaser.Scene {
       this.rowCount,
       this.array(this.columnCount, '')
     )
-    console.log('state test:', this.state)
 
     this.blocks = []
     this.letters = []
@@ -74,7 +73,7 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   tick = () => {
-    this.blocks.map(block => block.right())
+    this.blocks.map(block => block.left())
   }
 
   update () {
