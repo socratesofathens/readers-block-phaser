@@ -56,6 +56,11 @@ export default class HelloWorldScene extends Phaser.Scene {
       callbackScope: this,
       loop: true
     })
+
+    this.keys = this
+      .input
+      .keyboard
+      .addKeys('s,a,d')
   }
 
   each = (callback) => {
@@ -73,10 +78,22 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   tick = () => {
-    this.blocks.map(block => block.left())
+    this.blocks.map(block => block.down())
   }
 
   update () {
+    if (this.keys.a.isDown) {
+      this.blocks.map(block => block.left())
+    }
+
+    if (this.keys.d.isDown) {
+      this.blocks.map(block => block.right())
+    }
+
+    if (this.keys.s.isDown) {
+      this.blocks.map(block => block.down())
+    }
+
     this.letters.map(letter => letter.move())
   }
 

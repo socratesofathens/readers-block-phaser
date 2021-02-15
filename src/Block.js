@@ -32,7 +32,7 @@ export default class Block {
 
   down () {
     this.move(
-      this.getBelow, square => square.down
+      this.getBelow, square => square.down()
     )
   }
 
@@ -58,25 +58,15 @@ export default class Block {
     return outside
   }
 
-  getLeft = (near) => {
+  getLeft = (square) => this.getX(square, -1)
+
+  getRight = (square) => this.getX(square, 1)
+
+  getX = (near, direction) => {
     const row = this.scene.state[near.y]
     if (!row) return true
 
-    const far = near.x - 1
-    const square = row[far]
-    if (square === '') return square
-    if (!square) return true
-
-    const outside = this.isOutside(square)
-
-    return outside
-  }
-
-  getRight = (near) => {
-    const row = this.scene.state[near.y]
-    if (!row) return true
-
-    const far = near.x + 1
+    const far = near.x + direction
     const square = row[far]
     if (square === '') return square
     if (!square) return true
