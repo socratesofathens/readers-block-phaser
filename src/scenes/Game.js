@@ -7,8 +7,8 @@ export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
     super('hello-world')
 
-    this.rowCount = 20
-    this.columnCount = 12
+    this.rowCount = 5
+    this.columnCount = 5
 
     this.state = this.array(
       this.rowCount,
@@ -28,10 +28,26 @@ export default class HelloWorldScene extends Phaser.Scene {
     )
 
     this.blocks.push(block)
+
+    return block
   }
 
-  array = (length, value) => Array
-    .from({ length }, () => value)
+  array = (length, value) => {
+    const copyValue = () => {
+      return this.copy(value)
+    }
+
+    return Array.from({ length }, copyValue)
+  }
+
+  check = (x, y) => this.state[y][x]
+
+  copy (value) {
+    const string = JSON.stringify(value)
+    const parsed = JSON.parse(string)
+
+    return parsed
+  }
 
   create = () => {
     const rowHeight = HEIGHT / this.rowCount
@@ -48,7 +64,7 @@ export default class HelloWorldScene extends Phaser.Scene {
       0xffffff
     )
 
-    this.addBlock(4, 0)
+    this.spawn()
 
     this.timedEvent = this.time.addEvent({
       delay: 500,
@@ -64,34 +80,38 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   each = (callback) => {
-    this.state.forEach((row, rowIndex) => {
-      row.forEach((square, columnIndex) => {
-        if (square) {
-          callback(
-            row, square, rowIndex, columnIndex
-          )
-        }
-      })
-    })
+    const newState = this
+      .state
+      .map((row, rowIndex) => row.map(
+        (square, columnIndex) => callback(
+          square, row, rowIndex, columnIndex
+        )
+      ))
+
+    this.state = newState
   }
 
   high = percent => HEIGHT * percent
 
+  spawn () {
+    this.spawned = this.addBlock(1, 0)
+  }
+
   tick = () => {
-    this.blocks.map(block => block.down())
+    this.spawned?.down()
   }
 
   update () {
     if (this.keys.a.isDown) {
-      this.blocks.map(block => block.left())
+      this.spawned?.left()
     }
 
     if (this.keys.d.isDown) {
-      this.blocks.map(block => block.right())
+      this.spawned?.right()
     }
 
     if (this.keys.s.isDown) {
-      this.blocks.map(block => block.down())
+      this.spawned?.down()
     }
 
     this.letters.map(letter => letter.move())

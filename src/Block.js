@@ -15,25 +15,42 @@ export default class Block {
       { x: this.x + 1, y: this.y + 1 }
     ]
 
-    this.squares = letters
-      .map((letter, index) => {
-        const position = this.positions[index]
+    const full = this.positions.find(position => {
+      const now = this
+        .scene
+        .check(position.x, position.y)
 
-        const square = new Square(
-          this.scene,
-          position.x,
-          position.y,
-          letter
-        )
+      return now
+    })
 
-        return square
-      })
+    if (full) {
+      console.log('Game over!')
+      this.squares = []
+    } else {
+      this.squares = letters
+        .map((letter, index) => {
+          const position = this.positions[index]
+
+          const square = new Square(
+            this.scene,
+            position.x,
+            position.y,
+            letter
+          )
+
+          return square
+        })
+    }
   }
 
   down () {
-    this.move(
+    const blocked = this.move(
       this.getBelow, square => square.down()
     )
+
+    if (blocked) {
+      this.scene.spawn()
+    }
   }
 
   isOutside (square) {
@@ -58,9 +75,9 @@ export default class Block {
     return outside
   }
 
-  getLeft = (square) => this.getX(square, -1)
+  getLeft = square => this.getX(square, -1)
 
-  getRight = (square) => this.getX(square, 1)
+  getRight = square => this.getX(square, 1)
 
   getX = (near, direction) => {
     const row = this.scene.state[near.y]
@@ -78,6 +95,7 @@ export default class Block {
 
   move (checker, mover) {
     const blocked = this.squares.find(checker)
+
     if (blocked) return blocked
 
     this.squares.forEach(mover)

@@ -38,7 +38,7 @@ export default class Square {
       })
     this.text.setOrigin(0.5)
 
-    this.set()
+    this.set(this)
   }
 
   align (index) {
@@ -47,6 +47,15 @@ export default class Square {
     const high = this.scene.high(center)
 
     return high
+  }
+
+  leave () {
+    this.scene.each((square) => {
+      const equal = square === this
+
+      if (equal) return ''
+      return square
+    })
   }
 
   moveComponent (component) {
@@ -66,22 +75,29 @@ export default class Square {
     this.moveComponent(this.text)
   }
 
-  set () {
-    this.scene.state[this.y][this.x] = this
+  set (value) {
+    this.scene.state[this.y][this.x] = value
+
+    // console.log('this.scene.state test:', this.scene.state)
+
+    // debugger
   }
 
   down () {
+    this.leave()
     this.y = this.y + 1
-    this.set()
+    this.set(this)
   }
 
   left () {
+    this.leave()
     this.x = this.x - 1
-    this.set()
+    this.set(this)
   }
 
   right () {
+    this.leave()
     this.x = this.x + 1
-    this.set()
+    this.set(this)
   }
 }
