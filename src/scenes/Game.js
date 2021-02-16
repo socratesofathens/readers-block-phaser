@@ -7,8 +7,8 @@ export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
     super('hello-world')
 
-    this.rowCount = 5
-    this.columnCount = 5
+    this.rowCount = 20
+    this.columnCount = 13
 
     this.state = this.array(
       this.rowCount,
