@@ -26,7 +26,9 @@
     "parcel-plugin-static-files-copy": "^2.4.3"
   },
   "dependencies": {
-    "phaser": "^3.24.1"
+    "phaser": "^3.24.1",
+    "pos": "^0.4.2",
+    "wordlist-english": "^1.2.1"
   },
   "parcelCleanPaths": [
     "dist"

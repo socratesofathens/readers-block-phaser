@@ -49,7 +49,14 @@ export default class Square {
     return high
   }
 
-  leave () {
+  destroy () {
+    this.box.destroy()
+
+    this.text.destroy()
+  }
+
+  leave (debug) {
+    if (debug) console.log('leave test:', this)
     this.scene.each((square) => {
       const equal = square === this
 

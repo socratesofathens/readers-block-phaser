@@ -1,7 +1,8 @@
 import Phaser from 'phaser'
 
-import { HEIGHT, WIDTH } from '../main.js'
 import Block from '../Block'
+import { HEIGHT, WIDTH } from '../main.js'
+import Reader from '../Reader'
 
 export default class HelloWorldScene extends Phaser.Scene {
   constructor () {
@@ -17,6 +18,8 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     this.blocks = []
     this.letters = []
+
+    this.reader = new Reader(this)
   }
 
   preload = () => {
@@ -24,7 +27,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   addBlock = (x, y) => {
     const block = new Block(
-      this, x, y, ['A', 'B', 'C', 'D'], 'L'
+      this, x, y, ['K', 'I', 'C', 'D'], 'L'
     )
 
     this.blocks.push(block)
@@ -94,11 +97,13 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   spawn () {
-    this.spawned = this.addBlock(1, 0)
+    this.spawned = this.addBlock(6, 0)
   }
 
   tick = () => {
     this.spawned?.down()
+
+    this.reader.state()
   }
 
   update () {
@@ -113,6 +118,17 @@ export default class HelloWorldScene extends Phaser.Scene {
     if (this.keys.s.isDown) {
       this.spawned?.down()
     }
+
+    this.letters = this.letters.filter(letter => {
+      const found = this.state.find(row => {
+        return row
+          .find(square => square === letter)
+      })
+
+      if (!found) letter.destroy()
+
+      return found
+    })
 
     this.letters.map(letter => letter.move())
   }
