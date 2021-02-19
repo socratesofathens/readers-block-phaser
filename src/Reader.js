@@ -40,10 +40,8 @@ export default class Reader {
       console.log('words test:', words)
 
       words.forEach(word => {
-        console.log('word test:', word)
         word.squares.forEach(square => {
-          console.log('square test:', square)
-          square.leave(true)
+          square.leave()
         })
       })
     }
