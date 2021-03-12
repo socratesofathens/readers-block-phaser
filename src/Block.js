@@ -27,19 +27,19 @@ export default class Block {
       console.log('Game over!')
       this.squares = []
     } else {
-      this.squares = letters
-        .map((letter, index) => {
-          const position = this.positions[index]
+      this.squares = letters.map((letter, index) => {
+        const position = this.positions[index]
 
-          const square = new Square(
-            this.scene,
-            position.x,
-            position.y,
-            letter
-          )
+        const square = new Square(
+          this.scene,
+          this,
+          position.x,
+          position.y,
+          letter
+        )
 
-          return square
-        })
+        return square
+      })
     }
   }
 

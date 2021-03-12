@@ -1,6 +1,7 @@
 export default class Square {
-  constructor (scene, x, y, letter) {
+  constructor (scene, block, x, y, letter) {
     this.scene = scene
+    this.block = block
     this.x = x
     this.y = y
     this.letter = letter

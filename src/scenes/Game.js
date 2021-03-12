@@ -18,6 +18,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     this.blocks = []
     this.letters = []
+    this.words = []
 
     this.reader = new Reader(this)
   }
@@ -27,7 +28,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   addBlock = (x, y) => {
     const block = new Block(
-      this, x, y, ['K', 'I', 'C', 'D'], 'L'
+      this, x, y, ['K', 'I', 'C', 'K'], 'L'
     )
 
     this.blocks.push(block)

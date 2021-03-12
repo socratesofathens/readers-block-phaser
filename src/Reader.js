@@ -13,51 +13,91 @@ export default class Reader {
     this.minimum = 4
   }
 
-  isLong = string => string.length >= this.minimum
+  isLetter = square => {
+    if (!square) return false
+
+    const spawned = square.block === this.scene.spawned
+
+    if (spawned) return false
+
+    return true
+  }
+
+  isLong = string => {
+    return string.length >= this.minimum
+  }
 
   line = row => {
-    const tokens = this.tokenize(row)
-    if (tokens.length) {
-      console.log('tokens test:', tokens)
-    }
+    const result = {}
 
-    const matrix = tokens.map(this.token)
-    if (matrix.length) {
-      console.log('matrix test:', matrix)
-    }
+    row.find((square, index) => {
+      const isLetter = this.isLetter(square)
+      if (!isLetter) return false
 
-    const words = matrix.reduce(
-      (words, results) => {
-        results.forEach(result => {
-          words = [...words, ...result.words]
+      const rowSlice = row.slice(index)
+
+      const spaceIndex = rowSlice
+        .findIndex(square => !this.isLetter(square))
+      const foundSpace = spaceIndex > 0
+
+      const token = foundSpace
+        ? rowSlice.slice(0, spaceIndex)
+        : rowSlice
+
+      const tokenString = this
+        .stringify(token)
+
+      const indexes = Object
+        .keys(tokenString)
+        .reverse()
+      const wordIndex = indexes
+        .find(index => {
+          const tokenSlice = tokenString
+            .slice(0, index)
+
+          const read = this
+            .scene
+            .words
+            .includes(tokenSlice)
+          if (read) {
+            return false
+          }
+
+          const tag = this.tag(tokenSlice)
+
+          result.string = tokenSlice
+
+          return tag
         })
+      const foundWord = wordIndex > 0
 
-        return words
-      },
-      []
-    )
-    if (words.length) {
-      console.log('words test:', words)
+      if (!foundWord) return false
 
-      words.forEach(word => {
-        word.squares.forEach(square => {
-          square.leave()
-        })
-      })
+      const squares = token
+        .slice(0, wordIndex)
+
+      result.square = square
+      result.index = index
+      result.squares = squares
+
+      return true
+    })
+
+    if (result.squares) {
+      this.scene.words.push(result.string)
+      result.squares.forEach(square => square.leave())
     }
   }
 
   reduce = (result, square) => {
     if (square) {
-      result.token.push(square)
+      result.push(square)
     } else {
-      if (this.isLong(result.token)) {
-        const tokenized = {
-          squares: result.token,
-          string: this.stringify(result.token)
-        }
-        result.tokens.push(tokenized)
+      const tokenized = {
+        squares: result.token,
+        string: this.stringify(result.token)
       }
+      result.tokens.push(tokenized)
 
       result.token = []
     }
@@ -66,7 +106,7 @@ export default class Reader {
   }
 
   state () {
-    this.scene.state.map(this.line)
+    this.scene.state.find(this.line)
   }
 
   string = (token) => {
