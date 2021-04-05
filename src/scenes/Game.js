@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 
 import Block from '../Block'
 import { HEIGHT, WIDTH } from '../main.js'
+import List from '../List'
 import Reader from '../Reader'
 
 export default class HelloWorldScene extends Phaser.Scene {
@@ -34,6 +35,36 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.blocks.push(block)
 
     return block
+  }
+
+  addRectangle = ({ x, y, height, width, color }) => {
+    const realX = this.high(x)
+    const realY = this.high(y)
+    const realHeight = this.high(height)
+    const realWidth = this.high(width)
+
+    const rectangle = this.add.rectangle(
+      realX, realY, realHeight, realWidth, color
+    )
+
+    return rectangle
+  }
+
+  addText = ({ x, y, string, style }) => {
+    const realX = this.high(x)
+    const realY = this.high(y)
+
+    style = style || {}
+
+    if (style.fontSize) {
+      style.fontSize = this.high(style.fontSize)
+    }
+
+    const text = this.add.text(
+      realX, realY, string, style
+    )
+
+    return text
   }
 
   array = (length, value) => {
@@ -81,6 +112,8 @@ export default class HelloWorldScene extends Phaser.Scene {
       .input
       .keyboard
       .addKeys('s,a,d')
+
+    this.list = new List(this, 0.75, 0.03)
   }
 
   each = (callback) => {
@@ -132,6 +165,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     })
 
     this.letters.map(letter => letter.move())
+    this.list.update()
   }
 
   wide = percent => {

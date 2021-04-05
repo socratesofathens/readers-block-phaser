@@ -1,3 +1,4 @@
 --ignore-dir=.cache
 --ignore-dir=dist
 --ignore-dir=build
+--ignore-file=is:words.json
