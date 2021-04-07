@@ -10,7 +10,6 @@ export default class Reader {
     this.tagger = new pos.Tagger()
 
     this.words = json
-    this.minimum = 4
   }
 
   isLetter = square => {
@@ -28,13 +27,11 @@ export default class Reader {
   }
 
   line = row => {
-    const result = {}
-
-    row.find((square, index) => {
+    const foundSquare = row.find((square, columnIndex) => {
       const isLetter = this.isLetter(square)
       if (!isLetter) return false
 
-      const rowSlice = row.slice(index)
+      const rowSlice = row.slice(columnIndex)
 
       const spaceIndex = rowSlice
         .findIndex(square => !this.isLetter(square))
@@ -50,43 +47,35 @@ export default class Reader {
       const indexes = Object
         .keys(tokenString)
         .reverse()
-      const wordIndex = indexes
-        .find(index => {
-          const tokenSlice = tokenString
-            .slice(0, index)
+      const wordIndex = indexes.find(index => {
+        const integer = parseInt(index)
+        const indexOne = integer + 1
+        const tokenSlice = tokenString.slice(0, indexOne)
 
-          const read = this
-            .scene
-            .words
-            .includes(tokenSlice)
-          if (read) {
-            return false
-          }
+        const read = this
+          .scene
+          .words
+          .includes(tokenSlice)
+        if (read) {
+          return false
+        }
 
-          const tag = this.tag(tokenSlice)
+        const tag = this.tag(tokenSlice)
 
-          result.string = tokenSlice
+        if (tag) {
+          this.scene.words.push(tokenSlice)
 
-          return tag
-        })
-      const foundWord = wordIndex > 0
+          const squares = token.slice(0, indexOne)
+          squares.forEach(square => square.leave())
+        }
 
-      if (!foundWord) return false
+        return tag
+      })
 
-      const squares = token
-        .slice(0, wordIndex)
-
-      result.square = square
-      result.index = index
-      result.squares = squares
-
-      return true
+      return wordIndex
     })
 
-    if (result.squares) {
-      this.scene.words.push(result.string)
-      result.squares.forEach(square => square.leave())
-    }
+    return foundSquare
   }
 
   reduce = (result, square) => {
@@ -106,7 +95,12 @@ export default class Reader {
   }
 
   state () {
-    this.scene.state.find(this.line)
+    let read = true
+    while (read) {
+      read = this.scene.state.find(this.line)
+    }
+
+    return read
   }
 
   string = (token) => {
@@ -115,7 +109,6 @@ export default class Reader {
 
     token.forEach(square => {
       word.push(square)
-      // console.log('letter word test:', word)
 
       if (this.isLong(word)) {
         const string = this.stringify(word)

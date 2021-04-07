@@ -114,6 +114,9 @@ export default class HelloWorldScene extends Phaser.Scene {
       .addKeys('s,a,d')
 
     this.list = new List(this, 0.75, 0.03)
+
+    this.addBlock(5, 4)
+    this.addBlock(8, 4)
   }
 
   each = (callback) => {
