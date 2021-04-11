@@ -1,7 +1,8 @@
 import Phaser from 'phaser'
 
 import Block from '../Block'
-import { HEIGHT, WIDTH } from '../main.js'
+import Controller from '../Controller'
+import { HEIGHT, WIDTH } from '../main'
 import List from '../List'
 import Reader from '../Reader'
 
@@ -21,6 +22,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.letters = []
     this.words = []
 
+    this.controller = new Controller(this)
     this.reader = new Reader(this)
   }
 
@@ -144,17 +146,7 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   update () {
-    if (this.keys.a.isDown) {
-      this.spawned?.left()
-    }
-
-    if (this.keys.d.isDown) {
-      this.spawned?.right()
-    }
-
-    if (this.keys.s.isDown) {
-      this.spawned?.down()
-    }
+    this.controller.update()
 
     this.letters = this.letters.filter(letter => {
       const found = this.state.find(row => {
