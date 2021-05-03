@@ -43,6 +43,14 @@ export default class Block {
     }
   }
 
+  drop () {
+    let blocked = false
+
+    while (!blocked) {
+      blocked = this.down()
+    }
+  }
+
   down () {
     const blocked = this.move(
       this.getBelow, square => square.down()
@@ -51,6 +59,8 @@ export default class Block {
     if (blocked) {
       this.scene.spawn()
     }
+
+    return blocked
   }
 
   isOutside (square) {

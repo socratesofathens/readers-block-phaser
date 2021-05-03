@@ -113,7 +113,7 @@ export default class HelloWorldScene extends Phaser.Scene {
     this.keys = this
       .input
       .keyboard
-      .addKeys('s,a,d')
+      .addKeys(this.controller.string)
 
     this.list = new List(this, 0.75, 0.03)
 

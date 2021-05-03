@@ -1,7 +1,37 @@
 export default class Controller {
   constructor (scene) {
     this.scene = scene
+
+    this.nows = {
+      w: () => this.scene.spawned?.drop()
+    }
+
+    this.uses = {
+      s: () => this.scene.spawned?.down(),
+      a: () => this.scene.spawned?.left(),
+      d: () => this.scene.spawned?.right()
+    }
+
+    this.nowKeys = Object.keys(this.nows)
+    this.useKeys = Object.keys(this.uses)
+    const keyArray = [...this.nowKeys, ...this.useKeys]
+    const keySet = new Set(keyArray)
+    this.codes = [...keySet]
+    this.string = this.codes.join(',')
+
     this.keys = {}
+  }
+
+  check = ({ keys, checker, callbacks }) => {
+    keys.forEach(key => {
+      const checked = checker(key)
+
+      if (checked) {
+        const callback = callbacks[key]
+
+        callback()
+      }
+    })
   }
 
   down = (key) => {
@@ -14,7 +44,7 @@ export default class Controller {
     return this.keys[key] === now
   }
 
-  since = (key, minimum = 100, debug) => {
+  since = ({ key, minimum = 100, debug }) => {
     const now = Date.now()
     const difference = now - this.keys[key]
 
@@ -32,7 +62,7 @@ export default class Controller {
     const now = this.now(key)
     if (now) return true
 
-    const since = this.since(key, 100, debug)
+    const since = this.since({ key, debug })
 
     if (debug) {
       console.log('since test:', since)
@@ -56,19 +86,18 @@ export default class Controller {
   }
 
   update () {
-    const keys = ['a', 's', 'd']
-    keys.forEach(this.watch)
+    this.codes.forEach(this.watch)
 
-    if (this.use('a')) {
-      this.scene.spawned?.left()
-    }
+    this.check({
+      keys: this.nowKeys,
+      checker: this.now,
+      callbacks: this.nows
+    })
 
-    if (this.use('d')) {
-      this.scene.spawned?.right()
-    }
-
-    if (this.use('s')) {
-      this.scene.spawned?.down()
-    }
+    this.check({
+      keys: this.useKeys,
+      checker: this.use,
+      callbacks: this.uses
+    })
   }
 }
