@@ -103,12 +103,7 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     this.spawn()
 
-    this.timedEvent = this.time.addEvent({
-      delay: 500,
-      callback: this.tick,
-      callbackScope: this,
-      loop: true
-    })
+    this.wind()
 
     this.keys = this
       .input
@@ -166,5 +161,14 @@ export default class HelloWorldScene extends Phaser.Scene {
     const height = HEIGHT * percent
 
     return height * ratio
+  }
+
+  wind () {
+    this.timedEvent = this.time.addEvent({
+      delay: 500,
+      callback: this.tick,
+      callbackScope: this,
+      loop: true
+    })
   }
 }

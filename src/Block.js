@@ -147,11 +147,15 @@ export default class Block {
   }
 
   place (points) {
+    this.scene.timedEvent.remove()
+
     points.forEach((point, index) => {
       const square = this.squares[index]
 
       square.place(point)
     })
+
+    this.scene.wind()
   }
 
   right () {
