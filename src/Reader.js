@@ -50,20 +50,25 @@ export default class Reader {
       const wordIndex = indexes.find(index => {
         const integer = parseInt(index)
         const indexOne = integer + 1
-        const tokenSlice = tokenString.slice(0, indexOne)
+        const stringSlice = tokenString.slice(0, indexOne)
+        const tokenSlice = token.slice(0, indexOne)
+
+        tokenSlice.forEach(letter => {
+          letter.box.setFillStyle('0x0000ff')
+        })
 
         const read = this
           .scene
           .words
-          .includes(tokenSlice)
+          .includes(stringSlice)
         if (read) {
           return false
         }
 
-        const tag = this.tag(tokenSlice)
+        const tag = this.tag(stringSlice)
 
         if (tag) {
-          this.scene.words.push(tokenSlice)
+          this.scene.words.push(stringSlice)
 
           const squares = token.slice(0, indexOne)
           squares.forEach(square => square.leave())
