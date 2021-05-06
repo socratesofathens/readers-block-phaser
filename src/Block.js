@@ -69,9 +69,9 @@ export default class Block {
   }
 
   down () {
-    const blocked = this.move(
-      this.getBelow, square => square.down()
-    )
+    const mover = this.getMover('y', 1)
+
+    const blocked = this.move(mover)
 
     if (blocked) {
       this.scene.spawn()
@@ -141,15 +141,7 @@ export default class Block {
     return outside
   }
 
-  move (checker, mover) {
-    const blocked = this.squares.find(checker)
-
-    if (blocked) return blocked
-
-    this.squares.forEach(mover)
-  }
-
-  mve (mover) {
+  move (mover) {
     const points = this.squares.map(mover)
 
     const blocked = points.find(point => {
@@ -161,7 +153,7 @@ export default class Block {
     })
 
     if (blocked) {
-      return false
+      return true
     }
 
     points.forEach((point, index) => {
@@ -172,15 +164,15 @@ export default class Block {
   }
 
   left () {
-    this.move(
-      this.getLeft, square => square.left()
-    )
+    const mover = this.getMover('x', -1)
+
+    this.move(mover)
   }
 
   right () {
-    this.move(
-      this.getRight, square => square.right()
-    )
+    const mover = this.getMover('x', 1)
+
+    this.move(mover)
   }
 
   rotate (rotator) {
@@ -198,6 +190,21 @@ export default class Block {
       return { x, y }
     }
 
-    this.mve(move)
+    this.move(move)
+  }
+
+  getMover (property, modifier) {
+    const mover = square => {
+      const { x, y } = square
+      const point = { x, y }
+
+      const value = point[property]
+      const modified = value + modifier
+      point[property] = modified
+
+      return point
+    }
+
+    return mover
   }
 }
