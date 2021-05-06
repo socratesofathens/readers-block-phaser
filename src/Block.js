@@ -54,7 +54,7 @@ export default class Block {
       return { x, y }
     }
 
-    this.rotate(rotator)
+    return this.rotate(rotator)
   }
 
   counter () {
@@ -65,13 +65,11 @@ export default class Block {
       return { x, y }
     }
 
-    this.rotate(rotator)
+    return this.rotate(rotator)
   }
 
   down () {
-    const mover = this.getMover('y', 1)
-
-    const blocked = this.move(mover)
+    const blocked = this.cartesian({ y: 1 })
 
     if (blocked) {
       this.scene.spawn()
@@ -88,25 +86,14 @@ export default class Block {
     }
   }
 
-  getMover (property, modifier) {
+  cartesian ({ x = 0, y = 0 }) {
     const mover = square => {
-      const { x, y } = square
-      const point = { x, y }
-
-      const value = point[property]
-      const modified = value + modifier
-      point[property] = modified
+      const point = { x: square.x + x, y: square.y + y }
 
       return point
     }
 
-    return mover
-  }
-
-  horizontal (modifier) {
-    const mover = this.getMover('x', modifier)
-
-    this.move(mover)
+    return this.move(mover)
   }
 
   isEmpty ({ x, y }) {
@@ -151,11 +138,11 @@ export default class Block {
   }
 
   left () {
-    this.horizontal(-1)
+    return this.cartesian({ x: -1 })
   }
 
   right () {
-    this.horizontal(1)
+    return this.cartesian({ x: 1 })
   }
 
   rotate (rotator) {
@@ -173,6 +160,6 @@ export default class Block {
       return { x, y }
     }
 
-    this.move(move)
+    return this.move(move)
   }
 }
