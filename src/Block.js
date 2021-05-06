@@ -88,7 +88,28 @@ export default class Block {
     }
   }
 
-  isEmpty (x, y) {
+  getMover (property, modifier) {
+    const mover = square => {
+      const { x, y } = square
+      const point = { x, y }
+
+      const value = point[property]
+      const modified = value + modifier
+      point[property] = modified
+
+      return point
+    }
+
+    return mover
+  }
+
+  horizontal (modifier) {
+    const mover = this.getMover('x', modifier)
+
+    this.move(mover)
+  }
+
+  isEmpty ({ x, y }) {
     const row = this.scene.state[y]
     if (!row) return row
 
@@ -109,45 +130,11 @@ export default class Block {
     return !inside
   }
 
-  getBelow = (above) => {
-    const below = above.y + 1
-
-    const row = this.scene.state[below]
-    if (!row) return true
-
-    const square = row[above.x]
-    if (!square) return square
-
-    const outside = this.isOutside(square)
-
-    return outside
-  }
-
-  getLeft = square => this.getX(square, -1)
-
-  getRight = square => this.getX(square, 1)
-
-  getX = (near, direction) => {
-    const row = this.scene.state[near.y]
-    if (!row) return true
-
-    const far = near.x + direction
-    const square = row[far]
-    if (square === '') return square
-    if (!square) return true
-
-    const outside = this.isOutside(square)
-
-    return outside
-  }
-
   move (mover) {
     const points = this.squares.map(mover)
 
     const blocked = points.find(point => {
-      const { x, y } = point
-
-      const empty = this.isEmpty(x, y)
+      const empty = this.isEmpty(point)
 
       return !empty
     })
@@ -164,15 +151,11 @@ export default class Block {
   }
 
   left () {
-    const mover = this.getMover('x', -1)
-
-    this.move(mover)
+    this.horizontal(-1)
   }
 
   right () {
-    const mover = this.getMover('x', 1)
-
-    this.move(mover)
+    this.horizontal(1)
   }
 
   rotate (rotator) {
@@ -191,20 +174,5 @@ export default class Block {
     }
 
     this.move(move)
-  }
-
-  getMover (property, modifier) {
-    const mover = square => {
-      const { x, y } = square
-      const point = { x, y }
-
-      const value = point[property]
-      const modified = value + modifier
-      point[property] = modified
-
-      return point
-    }
-
-    return mover
   }
 }
