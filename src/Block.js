@@ -96,6 +96,22 @@ export default class Block {
     return this.move(mover)
   }
 
+  getPoints (mover) {
+    const points = this.squares.map(mover)
+
+    return points
+  }
+
+  isBlocked (points) {
+    const blocked = points.find(point => {
+      const empty = this.isEmpty(point)
+
+      return !empty
+    })
+
+    return blocked
+  }
+
   isEmpty ({ x, y }) {
     const row = this.scene.state[y]
     if (!row) return row
@@ -118,18 +134,19 @@ export default class Block {
   }
 
   move (mover) {
-    const points = this.squares.map(mover)
+    const points = this.getPoints(mover)
 
-    const blocked = points.find(point => {
-      const empty = this.isEmpty(point)
+    const blocked = this.isBlocked(points)
+    if (blocked) return true
 
-      return !empty
-    })
+    this.place(points)
+  }
 
-    if (blocked) {
-      return true
-    }
+  left () {
+    return this.cartesian({ x: -1 })
+  }
 
+  place (points) {
     points.forEach((point, index) => {
       const square = this.squares[index]
 
@@ -137,16 +154,12 @@ export default class Block {
     })
   }
 
-  left () {
-    return this.cartesian({ x: -1 })
-  }
-
   right () {
     return this.cartesian({ x: 1 })
   }
 
   rotate (rotator) {
-    const move = square => {
+    const mover = square => {
       const oldX = square.x - this.center.x
       const oldY = square.y - this.center.y
 
@@ -160,6 +173,27 @@ export default class Block {
       return { x, y }
     }
 
-    return this.move(move)
+    const center = this.getPoints(mover)
+    const blocked = this.isBlocked(center)
+    if (!blocked) return this.place(center)
+
+    const right = this.slide(center, { x: 1 })
+    if (right) return this.place(right)
+
+    const left = this.slide(center, { x: -1 })
+    if (left) return this.place(left)
+  }
+
+  slide = (points, { x = 0, y = 0 }) => {
+    const moves = points.map(point => {
+      const moved = { x: point.x + x, y: point.y + y }
+
+      return moved
+    })
+
+    const blocked = this.isBlocked(moves)
+    if (blocked) return false
+
+    return moves
   }
 }
