@@ -57,6 +57,12 @@ export default class Square {
     return center
   }
 
+  down () {
+    this.leave()
+    this.y = this.y + 1
+    this.set(this)
+  }
+
   destroy () {
     this.box.destroy()
 
@@ -73,6 +79,12 @@ export default class Square {
     })
   }
 
+  left () {
+    this.leave()
+    this.x = this.x - 1
+    this.set(this)
+  }
+
   moveComponent (component) {
     component.x = this.realX
     component.y = this.realY
@@ -86,29 +98,22 @@ export default class Square {
     this.moveComponent(this.text)
   }
 
-  set (value) {
-    this.scene.state[this.y][this.x] = value
-
-    // console.log('this.scene.state test:', this.scene.state)
-
-    // debugger
-  }
-
-  down () {
+  place ({ x, y }) {
     this.leave()
-    this.y = this.y + 1
-    this.set(this)
-  }
 
-  left () {
-    this.leave()
-    this.x = this.x - 1
+    this.x = x ?? this.x
+    this.y = y ?? this.y
+
     this.set(this)
   }
 
   right () {
-    this.leave()
-    this.x = this.x + 1
-    this.set(this)
+    const x = this.x + 1
+
+    this.place({ x })
+  }
+
+  set (value) {
+    this.scene.state[this.y][this.x] = value
   }
 }

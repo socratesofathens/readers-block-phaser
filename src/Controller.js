@@ -3,6 +3,8 @@ export default class Controller {
     this.scene = scene
 
     this.nows = {
+      e: () => this.scene.spawned?.clock(),
+      q: () => this.scene.spawned?.counter(),
       w: () => this.scene.spawned?.drop()
     }
 

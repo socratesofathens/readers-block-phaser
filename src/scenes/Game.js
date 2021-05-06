@@ -116,9 +116,6 @@ export default class HelloWorldScene extends Phaser.Scene {
       .addKeys(this.controller.string)
 
     this.list = new List(this, 0.75, 0.03)
-
-    this.addBlock(5, 4)
-    this.addBlock(8, 4)
   }
 
   each = (callback) => {
@@ -136,7 +133,7 @@ export default class HelloWorldScene extends Phaser.Scene {
   high = percent => HEIGHT * percent
 
   spawn () {
-    this.spawned = this.addBlock(6, 0)
+    this.spawned = this.addBlock(6, 1)
   }
 
   tick = () => {
