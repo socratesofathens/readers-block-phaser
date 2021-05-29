@@ -6,10 +6,54 @@ export default class Reader {
   constructor (scene) {
     this.scene = scene
 
+    this.tokenIndex = 0
+    this.tokenIndexes = []
+    this.token = []
     this.lexer = new pos.Lexer()
     this.tagger = new pos.Tagger()
 
     this.words = json
+  }
+
+  check (index) {
+    const squares = this.token.slice(0, this.tokenIndex)
+
+    squares.forEach(square => {
+      square.box.setFillStyle(0x0000ff)
+    })
+
+    const string = this.stringify(squares)
+    const read = this.scene.words.includes(string)
+    if (read) {
+      return false
+    }
+
+    const tag = this.tag(string)
+
+    if (tag) {
+      console.log('string test:', string)
+      this.scene.words.push(string)
+
+      squares.forEach(square => square.leave())
+
+      this.scan()
+
+      return true
+    }
+  }
+
+  getToken (row, index) {
+    const rowSlice = row.slice(index)
+
+    const spaceIndex = rowSlice
+      .findIndex(square => !this.isLetter(square))
+    const foundSpace = spaceIndex > 0
+
+    const token = foundSpace
+      ? rowSlice.slice(0, spaceIndex)
+      : rowSlice
+
+    return token
   }
 
   isLetter = square => {
@@ -27,60 +71,28 @@ export default class Reader {
   }
 
   line = row => {
-    const foundSquare = row.find((square, columnIndex) => {
+    const found = row.find((square, columnIndex) => {
       const isLetter = this.isLetter(square)
       if (!isLetter) return false
 
-      const rowSlice = row.slice(columnIndex)
-
-      const spaceIndex = rowSlice
-        .findIndex(square => !this.isLetter(square))
-      const foundSpace = spaceIndex > 0
-
-      const token = foundSpace
-        ? rowSlice.slice(0, spaceIndex)
-        : rowSlice
-
-      const tokenString = this
-        .stringify(token)
-
-      const indexes = Object
-        .keys(tokenString)
+      this.token = this.getToken(row, columnIndex)
+      this.tokenIndexes = Object
+        .keys(this.token)
         .reverse()
-      const wordIndex = indexes.find(index => {
+
+      const found = this.tokenIndexes.some(index => {
         const integer = parseInt(index)
-        const indexOne = integer + 1
-        const stringSlice = tokenString.slice(0, indexOne)
-        const tokenSlice = token.slice(0, indexOne)
+        this.tokenIndex = integer + 1
 
-        tokenSlice.forEach(letter => {
-          letter.box.setFillStyle('0x0000ff')
-        })
+        const checked = this.check()
 
-        const read = this
-          .scene
-          .words
-          .includes(stringSlice)
-        if (read) {
-          return false
-        }
-
-        const tag = this.tag(stringSlice)
-
-        if (tag) {
-          this.scene.words.push(stringSlice)
-
-          const squares = token.slice(0, indexOne)
-          squares.forEach(square => square.leave())
-        }
-
-        return tag
+        return checked
       })
 
-      return wordIndex
+      return found
     })
 
-    return foundSquare
+    return found
   }
 
   reduce = (result, square) => {
@@ -99,13 +111,9 @@ export default class Reader {
     return result
   }
 
-  state () {
-    let read = true
-    while (read) {
-      read = this.scene.state.find(this.line)
-    }
-
-    return read
+  scan () {
+    console.log('scan test:')
+    this.scene.state.find(this.line)
   }
 
   string = (token) => {
@@ -131,12 +139,11 @@ export default class Reader {
   }
 
   stringify = (token) => {
-    const letters = token
-      .reduce((letters, square) => {
-        letters.push(square.letter)
+    const letters = token.reduce((letters, square) => {
+      letters.push(square.letter)
 
-        return letters
-      }, [])
+      return letters
+    }, [])
 
     return letters.join('')
   }

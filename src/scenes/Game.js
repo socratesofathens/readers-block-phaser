@@ -103,8 +103,6 @@ export default class HelloWorldScene extends Phaser.Scene {
 
     this.spawn()
 
-    this.wind()
-
     this.keys = this
       .input
       .keyboard
@@ -129,12 +127,12 @@ export default class HelloWorldScene extends Phaser.Scene {
 
   spawn () {
     this.spawned = this.addBlock(6, 1)
+
+    this.wind()
   }
 
   tick = () => {
     this.spawned?.down()
-
-    this.reader.state()
   }
 
   update () {
@@ -164,11 +162,13 @@ export default class HelloWorldScene extends Phaser.Scene {
   }
 
   wind () {
+    this.reader.scan()
+
     this.timedEvent = this.time.addEvent({
       delay: 500,
       callback: this.tick,
       callbackScope: this,
-      loop: true
+      loop: false
     })
   }
 }
