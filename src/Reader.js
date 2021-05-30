@@ -6,6 +6,7 @@ export default class Reader {
   constructor (scene) {
     this.scene = scene
 
+    this.checkIndex = 0
     this.tokenIndex = 0
     this.tokenIndexes = []
     this.token = []
@@ -15,7 +16,7 @@ export default class Reader {
     this.words = json
   }
 
-  check (index) {
+  checkSquare (index) {
     const squares = this.token.slice(0, this.tokenIndex)
 
     squares.forEach(square => {
@@ -42,8 +43,19 @@ export default class Reader {
     }
   }
 
-  getToken (row, index) {
-    const rowSlice = row.slice(index)
+  checkToken () {
+    // TODO use isthisa to check if tokenIndex exists
+    this.tokenIndex = this.tokenIndexes[this.checkIndex]
+
+    const checked = this.checkSquare()
+
+    this.checkIndex = this.checkIndex + 1
+
+    return checked
+  }
+
+  getToken (index) {
+    const rowSlice = this.row.slice(index)
 
     const spaceIndex = rowSlice
       .findIndex(square => !this.isLetter(square))
@@ -71,23 +83,15 @@ export default class Reader {
   }
 
   line = row => {
-    const found = row.find((square, columnIndex) => {
+    this.row = row
+
+    const found = this.row.find((square, column) => {
       const isLetter = this.isLetter(square)
       if (!isLetter) return false
 
-      this.token = this.getToken(row, columnIndex)
-      this.tokenIndexes = Object
-        .keys(this.token)
-        .reverse()
+      this.setToken(column)
 
-      const found = this.tokenIndexes.some(index => {
-        const integer = parseInt(index)
-        this.tokenIndex = integer + 1
-
-        const checked = this.check()
-
-        return checked
-      })
+      const found = this.checkToken()
 
       return found
     })
@@ -114,6 +118,14 @@ export default class Reader {
   scan () {
     console.log('scan test:')
     this.scene.state.find(this.line)
+  }
+
+  setToken (column) {
+    this.token = this.getToken(column)
+    this.tokenIndexes = Object
+      .keys(this.token)
+      .reverse()
+      .map(string => parseInt(string) + 1)
   }
 
   string = (token) => {
